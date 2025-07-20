@@ -40,12 +40,12 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// <summary>
         /// Total sale amount including discounts.
         /// </summary>
-        public decimal TotalAmount { get; private set; }
+        public decimal TotalAmount { get;  set; }
 
         /// <summary>
         /// Indicates whether the sale was cancelled.
         /// </summary>
-        public bool IsCancelled { get; private set; }
+        public bool IsCancelled { get;  private set; }
 
         /// <summary>
         /// List of items in the sale.

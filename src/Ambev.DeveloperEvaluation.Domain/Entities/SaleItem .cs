@@ -35,12 +35,12 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// <summary>
         /// Total discount applied to this item.
         /// </summary>
-        public decimal Discount { get; private set; }
+        public decimal Discount { get; set; }
 
         /// <summary>
         /// Indicates whether this item was cancelled.
         /// </summary>
-        public bool IsCancelled { get; private set; }
+        public bool IsCancelled { get; set; }
 
         /// <summary>
         /// Total price after discount.
