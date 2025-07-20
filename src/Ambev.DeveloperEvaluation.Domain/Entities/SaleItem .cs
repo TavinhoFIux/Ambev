@@ -45,6 +45,19 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// <summary>
         /// Total price after discount.
         /// </summary>
+        /// 
+
+        /// <summary>
+        /// Foreign key to the parent Sale.
+        /// </summary>
+        public Guid SaleId { get; set; }
+
+        /// <summary>
+        /// Navigation property to the parent Sale.
+        /// </summary>
+        public Sale Sale { get; set; } = null!;
+
+
         public decimal TotalPrice => (UnitPrice * Quantity) - Discount;
 
         /// <summary>
@@ -52,8 +65,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// </summary>
         public void CalculateDiscount()
         {
-            if (Quantity > 20)
-                throw new InvalidOperationException("Cannot sell more than 20 units.");
 
             if (Quantity >= 10)
                 Discount = UnitPrice * Quantity * 0.20m;

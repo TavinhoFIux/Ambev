@@ -77,37 +77,35 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             return await PaginatedList<Sale>.CreateAsync(query, pageNumber, pageSize, cancellationToken);
         }
 
-        /// <summary>
-        /// Updates an existing sale in the database.
-        /// </summary>
-        /// <param name="sale">The sale entity with updated data.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task UpdateAsync(Sale sale, CancellationToken cancellationToken)
+        public async Task UpdateSaleAsync(Sale sale, CancellationToken cancellationToken)
         {
             var existingSale = await _context.Sales
-                .Include(s => s.Items)
                 .FirstOrDefaultAsync(s => s.Id == sale.Id, cancellationToken);
 
             if (existingSale is null)
                 throw new KeyNotFoundException($"Sale with ID {sale.Id} not found.");
 
-            _context.SaleItems.RemoveRange(existingSale.Items);
-
-            foreach (var item in sale.Items)
-            {
-                existingSale.Items.Add(new SaleItem
-                {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,
-                    Discount = item.TotalPrice - (item.UnitPrice * item.Quantity),
-                    IsCancelled = item.IsCancelled
-                });
-            }
             existingSale.CustomerName = sale.CustomerName;
             existingSale.TotalAmount = sale.TotalAmount;
+
+            _context.Sales.Update(existingSale);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UpdateSaleItemsAsync(Guid saleId, List<SaleItem> newItems, CancellationToken cancellationToken)
+        {
+            var existingItems = await _context.SaleItems
+                .Where(i => i.SaleId == saleId)
+                .ToListAsync(cancellationToken);
+
+            _context.SaleItems.RemoveRange(existingItems);
+
+            foreach (var item in newItems)
+            {
+                item.Id = Guid.NewGuid();
+                item.SaleId = saleId;
+                _context.SaleItems.Add(item);
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
         }

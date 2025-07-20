@@ -9,6 +9,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSales
     {
         public CreateSaleRequestValidator()
         {
+            RuleFor(x => x.SaleDate)
+                .NotEmpty().WithMessage("Sale date is required.")
+                .Must(date => date.Kind == DateTimeKind.Utc)
+                .WithMessage("Sale date must be in UTC format (e.g., 2025-07-20T15:00:00Z).");
             RuleFor(x => x.SaleNumber).NotEmpty().WithMessage("Sale number is required.");
             RuleFor(x => x.SaleDate).NotEmpty().WithMessage("Sale date is required.");
             RuleFor(x => x.CustomerId).NotEmpty().WithMessage("Customer ID is required.");

@@ -3,7 +3,9 @@ using Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetAllSales;
+using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSales;
@@ -89,13 +91,12 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
             var query = _mapper.Map<Application.Sales.GetSale.GetSaleQuery>(request);
             var result = await _mediator.Send(query, cancellationToken);
-            var response = _mapper.Map<GetSaleResponse>(result);
 
-            return Ok(new ApiResponseWithData<GetSaleResponse>
+            return Ok(new ApiResponseWithData<GetSaleResult>
             {
                 Success = true,
                 Message = "Sale retrieved successfully",
-                Data = response
+                Data = result
             });
         }
 
@@ -107,8 +108,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         /// <returns>A paginated list of sales mapped to <see cref="GetAllSalesResponse"/> wrapped in a standard API response.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllSales(
-         [FromQuery] GetAllSalesRequest request,
-         CancellationToken cancellationToken)
+       [FromQuery] GetAllSalesRequest request,
+       CancellationToken cancellationToken)
         {
             var validator = new GetAllSalesRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -119,7 +120,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var query = _mapper.Map<GetAllSalesQuery>(request);
             var result = await _mediator.Send(query, cancellationToken);
 
-            var response = result.Map(_mapper.Map<GetAllSalesResponse>);
+            var mappedItems = result.Select(item => _mapper.Map<GetSaleListItemResponse>(item)).ToList();
+
+            var response = new PaginatedList<GetSaleListItemResponse>(
+                mappedItems,
+                result.TotalCount,
+                result.CurrentPage,
+                result.PageSize
+            );
 
             return OkPaginated(response);
         }

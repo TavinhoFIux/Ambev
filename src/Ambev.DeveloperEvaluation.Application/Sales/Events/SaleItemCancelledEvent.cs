@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Ambev.DeveloperEvaluation.Application.Sales.Events
+{
+    public class SaleItemCancelledEvent : SaleEventBase
+    {
+        public Guid ProductId { get; }
+
+        public override string EventType => "SaleItemCancelled";
+    }
+}

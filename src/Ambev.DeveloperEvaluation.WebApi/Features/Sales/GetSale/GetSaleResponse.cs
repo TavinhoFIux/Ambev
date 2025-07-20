@@ -13,14 +13,19 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale
         public Guid Id { get; set; }
 
         /// <summary>
+        /// Gets or sets the sale number.
+        /// </summary>
+        public string SaleNumber { get; set; }
+
+        /// <summary>
         /// Gets or sets the customer name associated with the sale.
         /// </summary>
-        public string Customer { get; set; } = string.Empty;
+        public string Customer { get; set; }
 
         /// <summary>
         /// Gets or sets the branch where the sale occurred.
         /// </summary>
-        public string Branch { get; set; } = string.Empty;
+        public string Branch { get; set; }
 
         /// <summary>
         /// Gets or sets the date and time of the sale.
@@ -38,6 +43,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale
         public PaymentMethod PaymentMethod { get; set; }
 
         /// <summary>
+        /// Gets or sets whether the sale was cancelled.
+        /// </summary>
+        public bool IsCancelled { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of items involved in the sale.
         /// </summary>
         public List<GetSaleItemResponse> Items { get; set; } = new();
@@ -51,9 +61,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale
     public class GetSaleItemResponse
     {
         /// <summary>
+        /// Gets or sets the product ID.
+        /// </summary>
+        public string ProductId { get; set; }
+
+        /// <summary>
         /// Gets or sets the product name.
         /// </summary>
-        public string Product { get; set; } = string.Empty;
+        public string Product { get; set; }
 
         /// <summary>
         /// Gets or sets the quantity of the product sold.
@@ -64,5 +79,16 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale
         /// Gets or sets the unit price of the product.
         /// </summary>
         public decimal UnitPrice { get; set; }
+
+        /// <summary>
+        /// Gets or sets the discount applied to this item.
+        /// </summary>
+        public decimal Discount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total value of the item.
+        /// </summary>
+        public decimal TotalItem { get; set; }
     }
+
 }

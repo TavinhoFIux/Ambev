@@ -36,6 +36,7 @@ public class Program
                 )
             );
 
+
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.RegisterDependencies();

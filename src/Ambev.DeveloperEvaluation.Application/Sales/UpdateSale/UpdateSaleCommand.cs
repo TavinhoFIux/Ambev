@@ -15,7 +15,6 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
         public Guid Id { get; set; }
         public string CustomerName { get; set; } = null!;
         public decimal TotalAmount { get; set; }
-        public DateTime Date { get; set; }
 
         public List<UpdateSaleItemDto> Items { get; set; } = new();
     }

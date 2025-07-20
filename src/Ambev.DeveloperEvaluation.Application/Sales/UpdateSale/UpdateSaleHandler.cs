@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.Events;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
@@ -15,11 +16,14 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
     {
         private readonly ISaleRepository _saleRepository;
         private readonly IMapper _mapper;
+        private readonly ISaleEventPublisher _saleEventPublisher;
 
-        public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+
+        public UpdateSaleHandler(ISaleRepository saleRepository, IMapper mapper, ISaleEventPublisher saleEventPublisher)
         {
             _saleRepository = saleRepository;
             _mapper = mapper;
+            _saleEventPublisher = saleEventPublisher;
         }
 
         public async Task<UpdateSaleResult> Handle(UpdateSaleCommand request, CancellationToken cancellationToken)
@@ -34,24 +38,36 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
                 throw new KeyNotFoundException($"Sale with ID {request.Id} not found.");
 
             existingSale.CustomerName = request.CustomerName;
-            existingSale.TotalAmount = request.TotalAmount;
 
-            existingSale.Items.Clear();
-            foreach (var itemDto in request.Items)
+            var newItems = request.Items.Select(itemDto =>
             {
-                var newItem = new SaleItem
+                var item = new SaleItem
                 {
+                    Id = Guid.NewGuid(),
+                    SaleId = existingSale.Id,
                     ProductId = itemDto.ProductId,
                     ProductName = itemDto.ProductName,
                     Quantity = itemDto.Quantity,
-                    UnitPrice = itemDto.UnitPrice
+                    UnitPrice = itemDto.UnitPrice,
+                    IsCancelled = false
                 };
 
-                newItem.CalculateDiscount();
-                existingSale.Items.Add(newItem);
-            }
+                item.CalculateDiscount();
+                return item;
+            }).ToList();
 
-            await _saleRepository.UpdateAsync(existingSale, cancellationToken);
+            existingSale.TotalAmount = newItems.Sum(i => i.TotalPrice);
+
+
+            await _saleRepository.UpdateSaleAsync(existingSale, cancellationToken);
+
+            await _saleRepository.UpdateSaleItemsAsync(existingSale.Id, newItems, cancellationToken);
+
+
+            await _saleEventPublisher.PublishAsync(new SaleUpdatedEvent
+            {
+                SaleId = existingSale.Id,
+            }, cancellationToken);
 
             return new UpdateSaleResult
             {

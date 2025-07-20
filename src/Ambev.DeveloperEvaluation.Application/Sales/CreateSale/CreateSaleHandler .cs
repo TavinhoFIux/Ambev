@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.Events;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
@@ -13,24 +14,18 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
     {
         private readonly ISaleRepository _saleRepository;
         private readonly IMapper _mapper;
+        private readonly ISaleEventPublisher _saleEventPublisher;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CreateSaleHandler"/> class.
-        /// </summary>
-        /// <param name="saleRepository">The repository for managing sales data.</param>
-        /// <param name="mapper">The mapper for object-to-object transformations.</param>
-        public CreateSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+        public CreateSaleHandler(
+            ISaleRepository saleRepository,
+            IMapper mapper,
+            ISaleEventPublisher saleEventPublisher)
         {
             _saleRepository = saleRepository;
             _mapper = mapper;
+            _saleEventPublisher = saleEventPublisher;
         }
 
-        /// <summary>
-        /// Handles the creation of a new sale.
-        /// </summary>
-        /// <param name="command">The command containing sale creation data.</param>
-        /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
-        /// <returns>The result containing the ID of the newly created sale.</returns>
         public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
         {
             var validator = new CreateSaleCommandValidator();
@@ -61,12 +56,20 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
                     UnitPrice = item.UnitPrice
                 };
 
+                saleItem.CalculateDiscount();
                 sale.AddItem(saleItem);
             }
 
             await _saleRepository.CreateAsync(sale, cancellationToken);
 
+            await _saleEventPublisher.PublishAsync(new SaleCreatedEvent
+            {
+                SaleId = sale.Id,
+                CustomerName = sale.CustomerName
+            }, cancellationToken);
+
             return new CreateSaleResult { Id = sale.Id };
         }
     }
+
 }

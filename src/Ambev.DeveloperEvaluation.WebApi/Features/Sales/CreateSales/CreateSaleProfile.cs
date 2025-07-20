@@ -16,10 +16,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSales
         public CreateSaleProfile()
         {
             CreateMap<CreateSaleRequest, CreateSaleCommand>();
-            CreateMap<CreateSaleItemRequest, SaleItem>();
+            CreateMap<CreateSaleItemRequest, CreateSaleItemCommand>();
 
             CreateMap<CreateSaleResult, CreateSaleResponse>();
         }
     }
+
 
 }

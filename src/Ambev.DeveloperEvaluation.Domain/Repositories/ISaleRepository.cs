@@ -41,7 +41,9 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         /// <param name="sale">The sale entity with updated information.</param>
         /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous update operation.</returns>
-        Task UpdateAsync(Sale sale, CancellationToken cancellationToken);
+        Task UpdateSaleItemsAsync(Guid saleId, List<SaleItem> newItems, CancellationToken cancellationToken);
+
+        Task UpdateSaleAsync(Sale sale, CancellationToken cancellationToken);
 
         Task DeleteAsync(Sale sale, CancellationToken cancellationToken);
     }

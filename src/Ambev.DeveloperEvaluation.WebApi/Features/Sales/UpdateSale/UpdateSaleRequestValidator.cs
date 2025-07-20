@@ -8,8 +8,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale
         {
             RuleFor(x => x.Id).NotEmpty();
             RuleFor(x => x.CustomerName).NotEmpty().MaximumLength(100);
-            RuleFor(x => x.TotalAmount).GreaterThan(0);
-            RuleFor(x => x.Date).NotEmpty();
 
             RuleForEach(x => x.Items).SetValidator(new UpdateSaleItemRequestValidator());
         }

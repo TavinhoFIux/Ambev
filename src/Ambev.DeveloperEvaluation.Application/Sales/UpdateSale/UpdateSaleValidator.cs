@@ -18,11 +18,6 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
                 .NotEmpty().WithMessage("Customer name is required.")
                 .MaximumLength(100).WithMessage("Customer name must be at most 100 characters.");
 
-            RuleFor(x => x.TotalAmount)
-                .GreaterThan(0).WithMessage("Total amount must be greater than 0.");
-
-            RuleFor(x => x.Date)
-                .LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Date cannot be in the future.");
         }
     }
 }
