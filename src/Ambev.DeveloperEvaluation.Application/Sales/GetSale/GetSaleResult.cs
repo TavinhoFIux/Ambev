@@ -78,6 +78,11 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale
         /// Gets or sets the total amount for this item.
         /// </summary>
         public decimal TotalItem { get; set; }
+
+        /// <summary>
+        /// Indicates whether this item was cancelled.
+        /// </summary>
+        public bool IsCancelled { get; set; }
     }
 
 }

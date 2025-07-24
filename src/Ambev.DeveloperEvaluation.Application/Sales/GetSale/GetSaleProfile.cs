@@ -25,7 +25,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale
                 .ForMember(dest => dest.Branch, opt => opt.MapFrom(src => src.BranchName));
 
             CreateMap<SaleItem, GetSaleItemResult>()
-                  .ForMember(dest => dest.TotalItem, opt => opt.MapFrom(src => src.Quantity))
+                  .ForMember(dest => dest.TotalItem, opt => opt.MapFrom(src => src.TotalPrice))
                        .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.ProductName)); 
         }
     }

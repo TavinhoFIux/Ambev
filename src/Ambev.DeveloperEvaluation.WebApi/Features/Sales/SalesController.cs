@@ -61,12 +61,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var result = await _mediator.Send(command, cancellationToken);
             var response = _mapper.Map<CreateSaleResponse>(result);
 
-            return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
-            {
-                Success = true,
-                Message = "Sale created successfully",
-                Data = response
-            });
+            return Created(string.Empty, response);
         }
 
         /// <summary>
@@ -92,12 +87,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var query = _mapper.Map<Application.Sales.GetSale.GetSaleQuery>(request);
             var result = await _mediator.Send(query, cancellationToken);
 
-            return Ok(new ApiResponseWithData<GetSaleResult>
-            {
-                Success = true,
-                Message = "Sale retrieved successfully",
-                Data = result
-            });
+            return Ok(result);
         }
 
         /// <summary>
@@ -154,12 +144,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var result = await _mediator.Send(command, cancellationToken);
             var response = _mapper.Map<UpdateSaleResponse>(result);
 
-            return Ok(new ApiResponseWithData<UpdateSaleResponse>
-            {
-                Success = true,
-                Message = "Sale updated successfully",
-                Data = response
-            });
+            return Ok(response);
         }
 
         /// <summary>
@@ -185,12 +170,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var result = await _mediator.Send(command, cancellationToken);
             var response = _mapper.Map<DeleteSaleResponse>(result);
 
-            return Ok(new ApiResponseWithData<DeleteSaleResponse>
-            {
-                Success = true,
-                Message = "Venda excluída com sucesso.",
-                Data = response
-            });
+            return Ok(response);
         }
 
         /// <summary>
@@ -216,12 +196,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var result = await _mediator.Send(command, cancellationToken);
             var response = _mapper.Map<CancelSaleResponse>(result);
 
-            return Ok(new ApiResponseWithData<CancelSaleResponse>
-            {
-                Success = true,
-                Message = "Venda cancelada com sucesso.",
-                Data = response
-            });
+            return Ok(response);
         }
 
     }

@@ -17,7 +17,11 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
         public decimal TotalAmount { get; set; }
 
         public List<UpdateSaleItemDto> Items { get; set; } = new();
+
     }
+
+
+
 
     /// <summary>
     /// DTO representing an item in the sale update command.

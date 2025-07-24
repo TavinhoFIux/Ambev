@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using FluentValidation;
 using System.Text.Json;
@@ -20,6 +21,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             {
                 await _next(context);
             }
+            catch (SaleValidationException ex)
+            {
+                await HandleSaleValidationExceptionAsync(context, ex);
+            }
             catch (ValidationException ex)
             {
                 await HandleValidationExceptionAsync(context, ex);
@@ -35,6 +40,28 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             {
                 Success = false,
                 Message = "Validation Failed",
+                Errors = exception.Errors
+                    .Select(error => (ValidationErrorDetail)error)
+            };
+
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            return context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
+        }
+
+
+        private static Task HandleSaleValidationExceptionAsync(HttpContext context, SaleValidationException exception)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var response = new ApiResponse
+            {
+                Success = false,
+                Message = exception.Message,
                 Errors = exception.Errors
                     .Select(error => (ValidationErrorDetail)error)
             };

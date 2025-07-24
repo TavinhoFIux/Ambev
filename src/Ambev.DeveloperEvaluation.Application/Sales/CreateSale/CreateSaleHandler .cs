@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.Events;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
@@ -32,7 +33,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
             if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors);
+                throw new SaleValidationException(validationResult.Errors);
 
             var sale = new Sale
             {

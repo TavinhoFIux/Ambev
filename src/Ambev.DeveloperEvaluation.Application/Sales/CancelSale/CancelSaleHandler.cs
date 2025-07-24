@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.Events;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
 using MediatR;
@@ -27,22 +28,20 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
             if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors);
+                throw new SaleValidationException(validationResult.Errors);
 
             var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
 
             if (sale is null)
-                throw new KeyNotFoundException("Venda não encontrada.");
+                throw new SaleNotFoundException(command.Id);
 
             if (sale.IsCancelled)
-                throw new InvalidOperationException("Venda já está cancelada.");
+                throw new SaleAlreadyCancelledException(command.Id);
 
             sale.Cancel();
 
             foreach (var item in sale.Items)
-            {
                 item.IsCancelled = true;
-            }
 
             await _saleRepository.UpdateSaleAsync(sale, cancellationToken);
 
@@ -51,12 +50,10 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
                 SaleId = sale.Id,
             }, cancellationToken);
 
-
             await _saleEventPublisher.PublishAsync(new SaleCancelledEvent
             {
                 SaleId = sale.Id,
             }, cancellationToken);
-
 
             return new CancelSaleResult { Success = true };
         }

@@ -89,6 +89,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale
         /// Gets or sets the total value of the item.
         /// </summary>
         public decimal TotalItem { get; set; }
+
+        /// <summary>
+        /// Indicates whether this item was cancelled.
+        /// </summary>
+        public bool IsCancelled { get; set; }
     }
 
 }
